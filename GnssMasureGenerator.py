@@ -8,12 +8,14 @@ from GnssNet import GnssNet
 class GnssMeasureGenerator:
 
     def __init__(self, gnss_net: GnssNet, d_time=15, num_of_measure=100,
-                 gnss_displacement=15, random_seed=None):
+                 gnss_displacement=15, month=None, day=None, random_seed=None):
         self.random_seed = random_seed
         self.gnss_net = gnss_net
         self.d_time = datetime.timedelta(seconds=d_time)
         self.num_of_measure = num_of_measure
         self.gnss_displacement = gnss_displacement
+        self.month = month
+        self.day = day
         if random_seed is not None:
             random.seed(random_seed)
         self.start_time, self.end_time = self.init_times_border()
@@ -22,10 +24,14 @@ class GnssMeasureGenerator:
 
     def init_times_border(self):
         current_time = datetime.datetime.now()
-        month = random.randint(1, current_time.month - 1)
-        day = random.randint(1, 28)
-        start_time = datetime.datetime(current_time.year, month, day,
-                                       random.randint(0, 23),
+
+        if self.month is None:
+            self.month = random.randint(1, current_time.month - 1)
+        if self.day is None:
+            self.day = random.randint(1, 28)
+
+        start_time = datetime.datetime(current_time.year, self.month, self.day,
+                                       random.randint(8, 20),
                                        random.randint(0, 59),
                                        random.randint(0, 59))
         end_time = start_time + self.num_of_measure * self.d_time

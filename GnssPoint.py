@@ -1,3 +1,8 @@
+import math
+
+from matplotlib import pyplot as plt
+
+
 class GnssPoint:
     def __init__(self, x, y, z, name, point_type):
         """
@@ -24,7 +29,11 @@ class GnssPoint:
         """
         Возвращает строковое представление объекта.
         """
-        return f"GnssPoint(name={self.name}, type={self.point_type}, x={self.x:.3f}, y={self.y:.3f}, z={self.z:.3f})"
+        return (f"GnssPoint(name={self.name}, type={self.point_type}, x={self.x:.3f}, y={self.y:.3f}, z={self.z:.3f}, "
+                f"M={self.mse["M"]:.3f}, "
+                f"m_x={self.mse["m_x"]:.3f}, m_y={self.mse["m_y"]:.3f}, m_z={self.mse["m_z"]:.3f}, "
+                f"m_theta={self.mse["theta"]:.3f}, "
+                f"a={self.mse["a"]:.3f}, b={self.mse["b"]:.3f})")
 
     def __repr__(self):
         """
@@ -48,6 +57,23 @@ class GnssPoint:
         """
         return self.point_type == 'rover'
 
+    def plot_point(self, fig=None, ax=None, show=False):
+        if fig is None and ax is None:
+            fig, ax = plt.subplots()
+
+        if self.is_base():
+            ax.scatter(self.x, self.y, c='r', marker='o', label='Base Points')
+        if self.is_rover():
+            ax.scatter(self.x, self.y, c='b', marker='^', label='Rover Points')
+        ax.text(x=self.x, y=self.y, s=self.name, c="g")
+
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+
+        if show:
+            plt.show()
+
+
 
 if __name__ == "__main__":
     # Пример использования класса
@@ -59,3 +85,6 @@ if __name__ == "__main__":
 
     print(f"Is base_point a base station? {base_point.is_base()}")
     print(f"Is rover_point a rover? {rover_point.is_rover()}")
+    fig, ax = plt.subplots()
+    base_point.plot_point(fig, ax, show=False)
+    rover_point.plot_point(fig, ax, show=True)
