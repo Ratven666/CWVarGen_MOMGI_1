@@ -11,10 +11,11 @@ from GnssPoint import GnssPoint
 
 class GnssVector:
 
-    def __init__(self, gnss_net: GnssNet, point_0_name: str, point_1_name: str):
+    def __init__(self, gnss_net: GnssNet, point_0_name: str, point_1_name: str, color="black"):
         self.gnss_net = gnss_net
         self.point_0 = self.gnss_net.get_point_by_name(point_0_name)
         self.point_1 = self.gnss_net.get_point_by_name(point_1_name)
+        self.color = color
         self.x_0, self.y_0, self.z_0 = self.calk_base_coordinates_for_point(self.point_0)
         self.x_1, self.y_1, self.z_1 = self.calk_base_coordinates_for_point(self.point_1)
         self.dx, self.dy, self.dz = None, None, None
@@ -42,7 +43,6 @@ class GnssVector:
         self.zenith = math.acos(self.dz / self.s_dist)
 
         self.calk_vector_mse()
-        # self.calk_mse_stat()
 
     def calk_vector_mse(self):
         vx_2, vy_2, vz_2 = [], [], []
@@ -79,14 +79,15 @@ class GnssVector:
         x_0 = sum(x_0) / len(x_0)
         y_0 = sum(y_0) / len(y_0)
         z_0 = sum(z_0) / len(z_0)
-        return x_0, y_0, z_0
+        return point.x, point.y, point.z
+        # return x_0, y_0, z_0
 
     def plot_vector(self, fig=None, ax=None, show=True):
         if fig is None and ax is None:
             fig, ax = plt.subplots()
 
         ax.quiver(self.point_0.x, self.point_0.y,
-                  self.dx, self.dy, angles='xy', scale_units='xy', scale=1)
+                  self.dx, self.dy, angles='xy', scale_units='xy', scale=1, color=self.color)
 
         self.point_0.plot_point(fig, ax, show=False)
         self.point_1.plot_point(fig, ax, show=False)
@@ -224,12 +225,12 @@ if __name__ == "__main__":
     # gnss_net.plot_net()
 
     # gnss_vector = GnssVector(gnss_net, "SIEY", "PVAU")
-    gnss_vector = GnssVector(gnss_net, "PUSN", "PVAU")
+    gnss_vector = GnssVector(gnss_net, "PUSN", "PVAU", color="r")
     print(gnss_vector)
     # gnss_net.plot_net()
     print("0.09485379353656577 61.318497097279504 622.7606537516397")
 
-    # gnss_vector.plot_vector()
+    gnss_vector.plot_vector()
 
     print(gnss_vector.get_a_coefficients_df())
     print(gnss_vector.get_p_df())

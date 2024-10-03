@@ -2,13 +2,15 @@ import datetime
 import random
 from copy import deepcopy
 
+from CONFIG import D_TIME, NUM_OF_MEASURES, GNSS_DISPLACEMENT, PASS_POINT_PROB, CROP_PERC, MSE_Z_SCALER
 from GnssNet import GnssNet
 
 
 class GnssMeasureGenerator:
 
-    def __init__(self, gnss_net: GnssNet, d_time=15, num_of_measure=100,
-                 gnss_displacement=15, month=None, day=None, random_seed=None):
+    def __init__(self, gnss_net: GnssNet, d_time=D_TIME, num_of_measure=NUM_OF_MEASURES,
+                 gnss_displacement=GNSS_DISPLACEMENT, month=None, day=None, pass_point_prob=PASS_POINT_PROB,
+                 random_seed=None):
         self.random_seed = random_seed
         self.gnss_net = gnss_net
         self.d_time = datetime.timedelta(seconds=d_time)
@@ -16,6 +18,7 @@ class GnssMeasureGenerator:
         self.gnss_displacement = gnss_displacement
         self.month = month
         self.day = day
+        self.pass_point_prob = pass_point_prob
         if random_seed is not None:
             random.seed(random_seed)
         self.start_time, self.end_time = self.init_times_border()
@@ -62,7 +65,24 @@ class GnssMeasureGenerator:
             for time, measure in point:
                 measure["x"] += get_norm_value() * vector_mse
                 measure["y"] += get_norm_value() * vector_mse
-                measure["z"] += get_norm_value() * vector_mse * 10
+                measure["z"] += get_norm_value() * vector_mse * MSE_Z_SCALER
+
+    def init_gross_errors(self):
+        pass
+
+    def pass_the_points(self):
+        def is_a_pass_a_point():
+            rv = random.random()
+            pass_flag = True if rv <= self.pass_point_prob else False
+            return pass_flag
+
+        for point in self.gnss_net:
+            measure_data = {}
+            for time, measure in point.measure_data.items():
+                if is_a_pass_a_point():
+                    continue
+                measure_data[time] = measure
+            point.measure_data = measure_data
 
     def init_gnss_point_measure_data(self):
         for point in self.gnss_net:
@@ -72,9 +92,10 @@ class GnssMeasureGenerator:
                 measure["y"] += point.y
                 measure["z"] += point.z
         self.init_custom_point_error()
+        self.pass_the_points()
         self.crop_measure_from_time()
 
-    def crop_measure_from_time(self, crop_perc=0.10):
+    def crop_measure_from_time(self, crop_perc=CROP_PERC):
         for point in self.gnss_net:
             start_time = self.start_time + random.randint(0, int(crop_perc * self.num_of_measure)) * self.d_time
             end_time = self.end_time - random.randint(0, int(crop_perc * self.num_of_measure)) * self.d_time

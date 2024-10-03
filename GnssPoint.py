@@ -29,11 +29,25 @@ class GnssPoint:
         """
         Возвращает строковое представление объекта.
         """
-        return (f"GnssPoint(name={self.name}, type={self.point_type}, x={self.x:.3f}, y={self.y:.3f}, z={self.z:.3f}, "
-                f"M={self.mse["M"]:.3f}, "
-                f"m_x={self.mse["m_x"]:.3f}, m_y={self.mse["m_y"]:.3f}, m_z={self.mse["m_z"]:.3f}, "
-                f"m_theta={self.mse["theta"]:.3f}, "
-                f"a={self.mse["a"]:.3f}, b={self.mse["b"]:.3f})")
+        if self.mse is not None:
+            str_ = (f"GnssPoint(name={self.name}, type={self.point_type:5}, x={self.x:.3f}, y={self.y:.3f}, z={self.z:.3f}, "
+                    f"M={self.mse["M"]:.3f}, "
+                    f"m_x={self.mse["m_x"]:.3f}, "
+                    f"m_y={self.mse["m_y"]:.3f}, "
+                    f"m_z={self.mse["m_z"]:.3f}, "
+                    f"m_theta={self.mse["theta"]:.3f}, "
+                    f"a={self.mse["a"]:.3f}, "
+                    f"b={self.mse["b"]:.3f})")
+        else:
+            str_ = (f"GnssPoint(name={self.name}, type={self.point_type:5}, x={self.x:.3f}, y={self.y:.3f}, z={self.z:.3f}, "
+                    f"M={self.mse}, "
+                    f"m_x={self.mse}, "
+                    f"m_y={self.mse}, "
+                    f"m_z={self.mse}, "
+                    f"m_theta={self.mse}, "
+                    f"a={self.mse}, "
+                    f"b={self.mse})")
+        return str_
 
     def __repr__(self):
         """

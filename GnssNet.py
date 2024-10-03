@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 
+from CONFIG import MSE_B, MSE_A
 from GnssPoint import GnssPoint
 
 
@@ -9,7 +10,7 @@ class GnssNet:
         Инициализация объекта GnssNet.
         """
         if accuracy is None:
-            accuracy = {"a": 10, "b": 5}
+            accuracy = {"a": MSE_A, "b": MSE_B}
         self.accuracy = accuracy
         self.points = []
 
@@ -39,7 +40,7 @@ class GnssNet:
         for point in self:
             if point.name == point_name.upper():
                 return point
-        raise ValueError("Нет точки с таким именем!")
+        raise ValueError(f"Нет точки с таким именем! - {point_name}")
 
     def get_points(self):
         """

@@ -1,26 +1,21 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Начальные точки векторов
-x0 = [0, 1, 2]
-y0 = [0, 1, 2]
+# Создаем массив чисел
+numbers = np.linspace(0, 1, 3)
 
-# Компоненты векторов
-u = [1, -1, 0.5]
-v = [2, 0.5, -1]
+# Выбираем цветовую карту (например, 'viridis')
+cmap = plt.get_cmap('Set1')
 
-# Создаем график
-plt.figure()
+# Получаем цвета для каждого числа
+colors = cmap(numbers)
 
-# Рисуем векторы
-plt.quiver(1, 0, 1, 1, angles='xy', scale_units='xy', scale=1)
+print(colors)
+# Выводим цвета
+for number, color in zip(numbers, colors):
+    print(f"Число: {number}, Цвет: {color}")
 
-# Устанавливаем границы осей
-plt.xlim(-1, 3)
-plt.ylim(-1, 3)
-
-# Добавляем сетку
-plt.grid()
-
-# Показываем график
+# Пример использования цветов для рисования графика
+plt.scatter(numbers, np.zeros_like(numbers), c=colors, s=100)
+plt.colorbar()
 plt.show()
