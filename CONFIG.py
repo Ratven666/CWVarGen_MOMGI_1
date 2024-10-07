@@ -1,4 +1,6 @@
 
+# GNSS NET parameters
+
 NUM_POINTS = 12
 
 COUNT_OF_BASE_POINTS = 4
@@ -8,6 +10,8 @@ MIN_DISTANCE = 1500
 XY_LIMITS = 20_000
 
 Z_LIMITS = 500
+
+# Measurement parameters
 
 NUM_OF_SERIES = 2
 
@@ -19,6 +23,8 @@ GNSS_DISPLACEMENT = 0
 
 PASS_POINT_PROB = 0.1
 CROP_PERC = 0.1
+
+
 
 BASE_PATH = ""
 

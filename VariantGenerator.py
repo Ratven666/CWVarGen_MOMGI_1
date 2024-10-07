@@ -53,14 +53,24 @@ class VariantGenerator:
             self.measured_gnss_nets.append(gnss_net_copy)
             day += 1
 
-    def save_variant(self, base_path=BASE_PATH, students_group=""):
+    def _create_blank_vectors_json(self, vectors_path):
+        blank_vectors_dict = {}
+        for series in range(self.num_of_series):
+            key = str(series + 1)
+            blank_vectors = [["####", "####"] for _ in range(NUM_POINTS - 1)]
+            blank_vectors_dict[key] = blank_vectors
+        with open(os.path.join(vectors_path, f"Vectors_{self.student_name}.json"), "w") as file:
+            file.write(json.dumps(blank_vectors_dict, sort_keys=True, indent=4))
+
+    def save_variant(self, base_path=BASE_PATH, students_group="", create_blank_vectors_json=False):
         variant_path = os.path.join(base_path, f"ММОМГИ_КР_{datetime.datetime.now().year}", students_group,
                                     "Вариант", self.student_name)
-        # solve_path = os.path.join(base_path, f"ММОМГИ_КР_{datetime.datetime.now().year}", "Решение", self.student_name)
-
         os.makedirs(variant_path, exist_ok=True)
-        os.makedirs(os.path.join(base_path, f"ММОМГИ_КР_{datetime.datetime.now().year}", students_group,
-                                             "Векторы", self.student_name), exist_ok=True)
+        vectors_path = os.path.join(base_path, f"ММОМГИ_КР_{datetime.datetime.now().year}", students_group,
+                                             "Векторы", self.student_name)
+        os.makedirs(vectors_path, exist_ok=True)
+        if create_blank_vectors_json:
+            self._create_blank_vectors_json(vectors_path)
         for idx, net in enumerate(self.measured_gnss_nets):
             series_path = os.path.join(variant_path, f"Серия_{idx + 1}")
             os.makedirs(series_path, exist_ok=True)
@@ -78,7 +88,7 @@ class VariantGenerator:
 
     def solve_variant(self, base_path=BASE_PATH, students_group=""):
         vector_path = os.path.join(base_path, f"ММОМГИ_КР_{datetime.datetime.now().year}", students_group,
-                                    "Векторы", self.student_name, "vectors.json")
+                                   "Векторы", self.student_name, f"Vectors_{self.student_name}.json")
         with open(vector_path, 'r', encoding='utf-8') as file:
             vectors_dict = json.load(file)
 
@@ -90,7 +100,6 @@ class VariantGenerator:
                 v = GnssVector(self.measured_gnss_nets[series - 1], point_0_name=vector[0],
                                point_1_name=vector[1], color=color)
                 self.eq_net.add_gnss_vector(v)
-        # self.eq_net.plot_eq_net()
         self.eq_net.calculate()
 
     def plot(self):
@@ -100,18 +109,33 @@ class VariantGenerator:
             self.eq_net.plot_eq_net()
 
 
+def create_variants_for_students_file(students_file, base_path=BASE_PATH,
+                                      create_blank_vectors_json=False,
+                                      plot_gnss_net=False):
+    with (open(os.path.join(base_path, students_file), "rt", encoding="UTF-8") as file):
+        for student in file:
+            student_name, student_group = student.strip().split(";")
+            vg = VariantGenerator(student_name)
+            vg.save_variant(students_group=student_group,
+                            create_blank_vectors_json=create_blank_vectors_json)
+            print(student_name, student_group)
+            if plot_gnss_net:
+                vg.plot()
+
 if __name__ == "__main__":
     name = "Выстрчил Михаил Георгиевич"
 
     vg = VariantGenerator(name)
     # vg.plot()
-    vg.save_variant(students_group="ГГ-21-1")
-    vg.solve_variant(students_group="ГГ-21-1")
+    # vg.save_variant(students_group="ГГ-21-1", create_blank_vectors_json=True)
+    # vg.solve_variant(students_group="ГГ-21-1")
 
-    print(vg.eq_net.result_df)
-    vg.plot()
+    # print(vg.eq_net.result_df)
+    # vg.plot()
     # print(vg.eq_net.gnss_vectors)
     # print(vg._get_hash())
     # vg.plot()
+
+    create_variants_for_students_file("ГГ-21.csv", create_blank_vectors_json=True, plot_gnss_net=False)
 
 
