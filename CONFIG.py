@@ -1,0 +1,37 @@
+
+# GNSS NET parameters
+
+NUM_POINTS = 12
+
+COUNT_OF_BASE_POINTS = 4
+
+MIN_DISTANCE = 1500
+
+XY_LIMITS = 20_000
+
+Z_LIMITS = 500
+
+# Measurement parameters
+
+NUM_OF_SERIES = 2
+
+D_TIME = 15
+
+NUM_OF_MEASURES = 120
+
+GNSS_DISPLACEMENT = 0
+
+PASS_POINT_PROB = 0.1
+CROP_PERC = 0.1
+
+
+
+BASE_PATH = ""
+
+# MEASURED MSE #
+
+MSE_A = 5
+
+MSE_B = 3
+
+MSE_Z_SCALER = 5
