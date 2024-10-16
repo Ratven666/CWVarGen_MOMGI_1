@@ -40,7 +40,7 @@ class GnssNet:
         for point in self:
             if point.name == point_name.upper():
                 return point
-        raise ValueError(f"Нет точки с таким именем! - {point_name}")
+        raise PointNameException(f"Нет точки с таким именем!", point_name)
 
     def get_points(self):
         """
@@ -134,3 +134,14 @@ class GnssNet:
 
         plt.legend()
         plt.show()
+
+class PointNameException(ValueError):
+    """Мое собственное исключение, наследуемое от ValueError."""
+
+    def __init__(self, message, point_name):
+        self.point_name =point_name
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f'{self.message} - {self.point_name}'

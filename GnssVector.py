@@ -11,7 +11,7 @@ from GnssPoint import GnssPoint
 
 class GnssVector:
 
-    def __init__(self, gnss_net: GnssNet, point_0_name: str, point_1_name: str, color="black"):
+    def __init__(self, gnss_net: GnssNet, point_0_name: str, point_1_name: str, color="black", is_measured_vector=True):
         self.gnss_net = gnss_net
         self.point_0 = self.gnss_net.get_point_by_name(point_0_name)
         self.point_1 = self.gnss_net.get_point_by_name(point_1_name)
@@ -23,7 +23,18 @@ class GnssVector:
         self.h_dist = None
         self.mse_dx, self.mse_dy, self.mse_dz = None, None, None
         self.mse_s_dist, self.mse_azimuth, self.mse_zenith = None, None, None
+        self.is_measured_vector = is_measured_vector
         self.calk_vector()
+
+    def __eq__(self, other):
+        var_1 = self.point_0 == other.point_0 and self.point_1 == other.point_1
+        var_2 = self.point_0 == other.point_1 and self.point_1 == other.point_0
+        return  var_1 or var_2
+
+    def __hash__(self):
+        res = round(self.point_0.x + self.point_0.y + self.point_0.z +
+                    self.point_1.x + self.point_1.y + self.point_1.z, 6)
+        return hash(res)
 
     def calk_vector(self):
         d_x, d_y, d_z = [], [], []
@@ -33,16 +44,20 @@ class GnssVector:
                 d_x.append(measure_1["x"] - measure_0["x"])
                 d_y.append(measure_1["y"] - measure_0["y"])
                 d_z.append(measure_1["z"] - measure_0["z"])
-
-        self.dx = sum(d_x) / len(d_x)
-        self.dy = sum(d_y) / len(d_y)
-        self.dz = sum(d_z) / len(d_z)
+        try:
+            self.dx = sum(d_x) / len(d_x)
+            self.dy = sum(d_y) / len(d_y)
+            self.dz = sum(d_z) / len(d_z)
+        except ZeroDivisionError:
+            self.dx = self.point_1.x - self.point_0.x
+            self.dy = self.point_1.y - self.point_0.y
+            self.dz = self.point_1.z - self.point_0.z
         self.s_dist = (self.dx ** 2 + self.dy ** 2 + self.dz ** 2) ** 0.5
         self.h_dist = (self.dx ** 2 + self.dy ** 2) ** 0.5
         self.azimuth = math.atan2(self.dy, self.dx)
         self.zenith = math.acos(self.dz / self.s_dist)
-
-        self.calk_vector_mse()
+        if self.is_measured_vector:
+            self.calk_vector_mse()
 
     def calk_vector_mse(self):
         vx_2, vy_2, vz_2 = [], [], []
@@ -68,19 +83,7 @@ class GnssVector:
 
     @staticmethod
     def calk_base_coordinates_for_point(point: GnssPoint):
-        x_0, y_0, z_0 = [], [], []
-        if point.is_base():
-            return point.x, point.y, point.z
-        else:
-            for time, measure in point:
-                x_0.append(measure["x"])
-                y_0.append(measure["y"])
-                z_0.append(measure["z"])
-        x_0 = sum(x_0) / len(x_0)
-        y_0 = sum(y_0) / len(y_0)
-        z_0 = sum(z_0) / len(z_0)
         return point.x, point.y, point.z
-        # return x_0, y_0, z_0
 
     def plot_vector(self, fig=None, ax=None, show=True):
         if fig is None and ax is None:
@@ -88,12 +91,10 @@ class GnssVector:
 
         ax.quiver(self.point_0.x, self.point_0.y,
                   self.dx, self.dy, angles='xy', scale_units='xy', scale=1, color=self.color)
-
         self.point_0.plot_point(fig, ax, show=False)
         self.point_1.plot_point(fig, ax, show=False)
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
-
         if show:
             plt.show()
 
@@ -217,6 +218,7 @@ class GnssVector:
         return f"GnssVector({self.point_0.name}-{self.point_1.name})"
 
 
+
 if __name__ == "__main__":
     gnss_net = GnssNetGenerator(random_seed=42, num_points=5).create_gnss_net()
 
@@ -226,13 +228,29 @@ if __name__ == "__main__":
 
     # gnss_vector = GnssVector(gnss_net, "SIEY", "PVAU")
     gnss_vector = GnssVector(gnss_net, "PUSN", "PVAU", color="r")
-    print(gnss_vector)
+    gnss_vector_2 = GnssVector(gnss_net, "PUSN", "PVAU", color="r")
+    gnss_vector_3 = GnssVector(gnss_net, "PVAU", "PUSN", color="r")
+    gnss_vector_4 = GnssVector(gnss_net, "SIEY", "PVAU")
+
+    print(gnss_vector == gnss_vector_2,
+          gnss_vector_2 == gnss_vector_3,
+          gnss_vector_3 == gnss_vector_4)
+
+    v_lst = [gnss_vector, gnss_vector_3, gnss_vector_4, gnss_vector_2]
+    print(v_lst)
+    v_set = set(v_lst)
+    print(list(v_set))
+
+
+
+
+    print(repr(gnss_vector))
     # gnss_net.plot_net()
-    print("0.09485379353656577 61.318497097279504 622.7606537516397")
+    # print("0.09485379353656577 61.318497097279504 622.7606537516397")
 
-    gnss_vector.plot_vector()
+    # gnss_vector.plot_vector()
 
-    print(gnss_vector.get_a_coefficients_df())
-    print(gnss_vector.get_p_df())
-    print(gnss_vector.get_l_ds())
-    print(gnss_vector.get_base_coord_ds())
+    # print(gnss_vector.get_a_coefficients_df())
+    # print(gnss_vector.get_p_df())
+    # print(gnss_vector.get_l_ds())
+    # print(gnss_vector.get_base_coord_ds())

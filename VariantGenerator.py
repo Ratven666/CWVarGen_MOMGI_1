@@ -126,6 +126,9 @@ if __name__ == "__main__":
     name = "Выстрчил Михаил Георгиевич"
 
     vg = VariantGenerator(name)
+    vg.solve_variant()
+    print(vg.eq_net.result_df)
+    # vg.save_variant(create_blank_vectors_json=True)
     # vg.plot()
     # vg.save_variant(students_group="ГГ-21-1", create_blank_vectors_json=True)
     # vg.solve_variant(students_group="ГГ-21-1")
@@ -136,6 +139,6 @@ if __name__ == "__main__":
     # print(vg._get_hash())
     # vg.plot()
 
-    create_variants_for_students_file("ГГ-21.csv", create_blank_vectors_json=True, plot_gnss_net=False)
+    # create_variants_for_students_file("ГГ-21.csv", create_blank_vectors_json=True, plot_gnss_net=False)
 
 

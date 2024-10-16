@@ -22,6 +22,9 @@ class GnssPoint:
         self.mse = None
         self.measure_data = {}
 
+    def __eq__(self, other):
+        return self.name == other.name
+
     def __iter__(self):
         return iter(self.measure_data.items())
 
@@ -93,12 +96,16 @@ if __name__ == "__main__":
     # Пример использования класса
     base_point = GnssPoint(40.7128, -74.0060, 10.0, "Base Station", "base")
     rover_point = GnssPoint(40.7130, -74.0062, 12.0, "Rover 1", "rover")
+    rover_point_2 = GnssPoint(40.7130, -74.0062, 12.0, "Rover 1", "rover")
 
     print(base_point)
     print(rover_point)
 
     print(f"Is base_point a base station? {base_point.is_base()}")
     print(f"Is rover_point a rover? {rover_point.is_rover()}")
-    fig, ax = plt.subplots()
-    base_point.plot_point(fig, ax, show=False)
-    rover_point.plot_point(fig, ax, show=True)
+    # fig, ax = plt.subplots()
+    # base_point.plot_point(fig, ax, show=False)
+    # rover_point.plot_point(fig, ax, show=True)
+
+    print(base_point == rover_point)
+    print(rover_point_2 == rover_point)
