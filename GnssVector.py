@@ -80,6 +80,9 @@ class GnssVector:
 
         self.mse_zenith = ((-1 / (self.s_dist * (1 - (self.dz / self.s_dist) ** 2) ** 0.5)) ** 2 * self.mse_dz ** 2 +
                            (self.dz / (self.s_dist ** 2 * (1 - (self.dz / self.s_dist) ** 2) ** 0.5)) ** 2 * self.mse_s_dist ** 2) ** 0.5
+        self.mse_s_dist = self.mse_s_dist / (len(vx_2) ** 0.5)
+        self.mse_azimuth = self.mse_azimuth / (len(vx_2) ** 0.5)
+        self.mse_zenith = self.mse_zenith / (len(vx_2) ** 0.5)
 
     @staticmethod
     def calk_base_coordinates_for_point(point: GnssPoint):
@@ -245,6 +248,10 @@ if __name__ == "__main__":
 
 
     print(repr(gnss_vector))
+    print(gnss_vector)
+    # GnssVector(PUSN - PVAU, dist=6063.391, azimuth=139.506, zenith=87.459, mse_dx=0.074, mse_dy=0.074, mse_dz=0.432
+    # mse_s_dist = 0.009, mse_azimuth = 17.771, mse_zenith = 103.753)
+
     # gnss_net.plot_net()
     # print("0.09485379353656577 61.318497097279504 622.7606537516397")
 
