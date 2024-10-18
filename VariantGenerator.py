@@ -101,6 +101,7 @@ class VariantGenerator:
                                point_1_name=vector[1], color=color)
                 self.eq_net.add_gnss_vector(v)
         self.eq_net.calculate()
+        return self.eq_net
 
     def plot(self):
         if self.eq_net is None:

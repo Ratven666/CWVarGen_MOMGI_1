@@ -214,8 +214,8 @@ class GnssVector:
                 f"zenith={math.degrees(self.zenith):.3f}, "
                 f"mse_dx={self.mse_dx:.3f}, mse_dy={self.mse_dy:.3f}, mse_dz={self.mse_dz:.3f} "
                 f"mse_s_dist={self.mse_s_dist:.3f}, "
-                f"mse_azimuth={math.degrees(self.mse_azimuth) * 206265:.3f}, "
-                f"mse_zenith={math.degrees(self.mse_zenith) * 206265:.3f})")
+                f"mse_azimuth={math.degrees(self.mse_azimuth) * 3600:.3f}, "
+                f"mse_zenith={math.degrees(self.mse_zenith) * 3600:.3f})")
 
     def __repr__(self):
         return f"GnssVector({self.point_0.name}-{self.point_1.name})"

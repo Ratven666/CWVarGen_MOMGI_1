@@ -138,7 +138,9 @@ class VectorTester:
             color = "r" if series == 1 else "b"
             vectors_net = []
             for vector in vectors:
-                v = GnssVector(self.vg.base_gnss_net, point_0_name=vector[0],
+                # v = GnssVector(self.vg.base_gnss_net, point_0_name=vector[0],
+                #                point_1_name=vector[1], color=color, is_measured_vector=True)
+                v = GnssVector(self.vg.measured_gnss_nets[series - 1], point_0_name=vector[0],
                                point_1_name=vector[1], color=color, is_measured_vector=True)
                 vectors_net.append(v)
             self.vectors_net.append(vectors_net)
@@ -206,16 +208,16 @@ class VectorTester:
 
 if __name__ == "__main__":
     # name = "Савина Анастасия Викторовна"
-    # name = "Джавадова Шакира Ташаккуровна"
+    name = "Емелин Семён Викторович"
 
-    # vt = VectorTester(name)
+    vt = VectorTester(name)
     #
     #
-    # vt.check_vectors(base_path=r"/Users/mikhail_vystrchil/Downloads", students_group="ГГ-21-1")
+    vt.check_vectors(base_path=r"/Users/mikhail_vystrchil/Downloads", students_group="ГГ-21-1")
 
-    VectorTester.check_vectors_for_students_group(students_file="ГГ-21.csv",
-                                                  students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
-                                                  base_path=r"/Users/mikhail_vystrchil/Downloads")
+    # VectorTester.check_vectors_for_students_group(students_file="ГГ-21.csv",
+    #                                               students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
+    #                                               base_path=r"/Users/mikhail_vystrchil/Downloads")
     # vt.plot_vectors()
 
     # vt.get_result()
