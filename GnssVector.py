@@ -70,19 +70,51 @@ class GnssVector:
         self.mse_dx = (sum(vx_2) / (len(vx_2) - 1)) ** 0.5
         self.mse_dy = (sum(vy_2) / (len(vy_2) - 1)) ** 0.5
         self.mse_dz = (sum(vz_2) / (len(vz_2) - 1)) ** 0.5
+        v_s_2, v_a_2, v_z_2 = [], [], []
+        for time, measure_0 in self.point_0:
+            measure_1 = self.point_1.measure_data.get(time)
+            if measure_1 is not None:
+                dx = measure_1["x"] - measure_0["x"]
+                dy = measure_1["y"] - measure_0["y"]
+                dz = measure_1["z"] - measure_0["z"]
+                s = (dx ** 2 + dy ** 2 + dz ** 2) ** 0.5
+                a = math.atan2(dy, dx)
+                z = math.acos(dz / s)
+                v_s_2.append((s - self.s_dist) ** 2)
+                v_a_2.append((a - self.azimuth) ** 2)
+                v_z_2.append((z - self.zenith) ** 2)
+        mse_s = (sum(v_s_2) / (len(v_s_2) - 1)) ** 0.5
+        mse_a = (sum(v_a_2) / (len(v_a_2) - 1)) ** 0.5
+        mse_z = (sum(v_z_2) / (len(v_z_2) - 1)) ** 0.5
+        self.mse_s_dist = mse_s / (len(v_s_2) ** 0.5)
+        self.mse_azimuth = mse_a / (len(v_a_2) ** 0.5)
+        self.mse_zenith = mse_z / (len(v_z_2) ** 0.5)
 
-        self.mse_s_dist = ((self.dx / self.s_dist) ** 2 * self.mse_dx ** 2 +
-                           (self.dy / self.s_dist) ** 2 * self.mse_dy ** 2 +
-                           (self.dz / self.s_dist) ** 2 * self.mse_dz ** 2) ** 0.5
 
-        self.mse_azimuth = ((-self.dy / (self.dx ** 2 + self.dy ** 2)) ** 2 * self.mse_dx ** 2 +
-                            (self.dx / (self.dx ** 2 + self.dy ** 2)) ** 2 * self.mse_dy ** 2) ** 0.5
-
-        self.mse_zenith = ((-1 / (self.s_dist * (1 - (self.dz / self.s_dist) ** 2) ** 0.5)) ** 2 * self.mse_dz ** 2 +
-                           (self.dz / (self.s_dist ** 2 * (1 - (self.dz / self.s_dist) ** 2) ** 0.5)) ** 2 * self.mse_s_dist ** 2) ** 0.5
-        self.mse_s_dist = self.mse_s_dist / (len(vx_2) ** 0.5)
-        self.mse_azimuth = self.mse_azimuth / (len(vx_2) ** 0.5)
-        self.mse_zenith = self.mse_zenith / (len(vx_2) ** 0.5)
+    # def calk_vector_mse(self):
+    #     vx_2, vy_2, vz_2 = [], [], []
+    #     for time, measure_0 in self.point_0:
+    #         measure_1 = self.point_1.measure_data.get(time)
+    #         if measure_1 is not None:
+    #             vx_2.append((measure_1["x"] - measure_0["x"] - self.dx) ** 2)
+    #             vy_2.append((measure_1["y"] - measure_0["y"] - self.dy) ** 2)
+    #             vz_2.append((measure_1["z"] - measure_0["z"] - self.dz) ** 2)
+    #     self.mse_dx = (sum(vx_2) / (len(vx_2) - 1)) ** 0.5
+    #     self.mse_dy = (sum(vy_2) / (len(vy_2) - 1)) ** 0.5
+    #     self.mse_dz = (sum(vz_2) / (len(vz_2) - 1)) ** 0.5
+    #
+    #     self.mse_s_dist = ((self.dx / self.s_dist) ** 2 * self.mse_dx ** 2 +
+    #                        (self.dy / self.s_dist) ** 2 * self.mse_dy ** 2 +
+    #                        (self.dz / self.s_dist) ** 2 * self.mse_dz ** 2) ** 0.5
+    #
+    #     self.mse_azimuth = ((-self.dy / (self.dx ** 2 + self.dy ** 2)) ** 2 * self.mse_dx ** 2 +
+    #                         (self.dx / (self.dx ** 2 + self.dy ** 2)) ** 2 * self.mse_dy ** 2) ** 0.5
+    #
+    #     self.mse_zenith = ((-1 / (self.s_dist * (1 - (self.dz / self.s_dist) ** 2) ** 0.5)) ** 2 * self.mse_dz ** 2 +
+    #                        (self.dz / (self.s_dist ** 2 * (1 - (self.dz / self.s_dist) ** 2) ** 0.5)) ** 2 * self.mse_s_dist ** 2) ** 0.5
+    #     self.mse_s_dist = self.mse_s_dist / (len(vx_2) ** 0.5)
+    #     self.mse_azimuth = self.mse_azimuth / (len(vx_2) ** 0.5)
+    #     self.mse_zenith = self.mse_zenith / (len(vx_2) ** 0.5)
 
     @staticmethod
     def calk_base_coordinates_for_point(point: GnssPoint):

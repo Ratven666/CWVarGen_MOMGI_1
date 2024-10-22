@@ -145,6 +145,7 @@ class EqualisedNetwork:
             vector.plot_vector(fig, ax, show=False)
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
+        ax.set_aspect('equal')
         if show:
             plt.show()
 

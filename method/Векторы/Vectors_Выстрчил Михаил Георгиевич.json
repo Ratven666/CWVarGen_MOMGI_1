@@ -1,0 +1,38 @@
+{
+    "1": [
+        [
+            "FMWY",
+            "WLTU"
+        ],
+        [
+            "WLTU",
+            "NJYN"
+        ],
+        [
+            "NJYN",
+            "CLGK"
+        ],
+        [
+            "CLGK",
+            "AINJ"
+        ]
+    ],
+    "2": [
+        [
+            "FMWY",
+            "NJYN"
+        ],
+        [
+            "FMWY",
+            "CLGK"
+        ],
+        [
+            "CLGK",
+            "WLTU"
+        ],
+        [
+            "AINJ",
+            "NJYN"
+        ]
+    ]
+}

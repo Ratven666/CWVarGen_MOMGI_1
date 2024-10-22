@@ -5,25 +5,51 @@ from copy import deepcopy
 import numpy as np
 import pandas as pd
 
-from CONFIG import BASE_PATH
+from CONFIG import BASE_PATH, NUM_OF_SERIES, NUM_POINTS, COUNT_OF_BASE_POINTS, MIN_DISTANCE, XY_LIMITS, Z_LIMITS, \
+    NUM_OF_MEASURES, D_TIME, GNSS_DISPLACEMENT, PASS_POINT_PROB
 from VariantGenerator import VariantGenerator
 
 
 class BaseLineTester:
 
-    def __init__(self, student_name):
+    def __init__(self, student_name, num_of_series=NUM_OF_SERIES, num_points=NUM_POINTS,
+                 count_of_base_point=COUNT_OF_BASE_POINTS,
+                 min_distance=MIN_DISTANCE,
+                 xy_limits=XY_LIMITS,
+                 z_limit=Z_LIMITS,
+                 num_of_measure=NUM_OF_MEASURES,
+                 d_time=D_TIME,
+                 gnss_displacement=GNSS_DISPLACEMENT,
+                 pass_point_prob=PASS_POINT_PROB):
         self.student_name = student_name
-        self.vg = VariantGenerator(student_name)
+        self.vg = VariantGenerator(student_name, num_of_series=num_of_series, num_points=num_points,
+                                   count_of_base_point=count_of_base_point,
+                                   min_distance=min_distance,
+                                   xy_limits=xy_limits,
+                                   z_limit=z_limit,
+                                   num_of_measure=num_of_measure,
+                                   d_time=d_time,
+                                   gnss_displacement=gnss_displacement,
+                                   pass_point_prob=pass_point_prob)
         self.eq_net = None
         self.vectors_list = None
         self.vectors_df = None
 
     @classmethod
     def check_base_lines_for_students_group(cls,
-                                         students_file,
-                                         students_file_with_good_vectors,
-                                         base_path=BASE_PATH,
-                                         ):
+                                            students_file,
+                                            students_file_with_good_vectors,
+                                            base_path=BASE_PATH,
+                                            num_of_series=NUM_OF_SERIES, num_points=NUM_POINTS,
+                                            count_of_base_point=COUNT_OF_BASE_POINTS,
+                                            min_distance=MIN_DISTANCE,
+                                            xy_limits=XY_LIMITS,
+                                            z_limit=Z_LIMITS,
+                                            num_of_measure=NUM_OF_MEASURES,
+                                            d_time=D_TIME,
+                                            gnss_displacement=GNSS_DISPLACEMENT,
+                                            pass_point_prob=PASS_POINT_PROB
+                                            ):
         try:
             with open(students_file_with_good_vectors, "rt", encoding="UTF-8") as sfwgv:
                 good_vectors_student = sfwgv.readlines()
@@ -36,9 +62,18 @@ class BaseLineTester:
                 if student_line in good_vectors_student:
                     print(student_line)
                     student, group = student_line.strip().split(";")
-                    blt = cls(student_name=student)
-                    blt.create_base_lines_file_structures(students_file_with_good_vectors=students_file_with_good_vectors,
-                                                          base_path=base_path)
+                    blt = cls(student_name=student, num_of_series=num_of_series, num_points=num_points,
+                              count_of_base_point=count_of_base_point,
+                              min_distance=min_distance,
+                              xy_limits=xy_limits,
+                              z_limit=z_limit,
+                              num_of_measure=num_of_measure,
+                              d_time=d_time,
+                              gnss_displacement=gnss_displacement,
+                              pass_point_prob=pass_point_prob)
+                    blt.create_base_lines_file_structures(
+                        students_file_with_good_vectors=students_file_with_good_vectors,
+                        base_path=base_path)
 
     def _is_student_done_vectors_part(self, students_file_with_good_vectors):
         with open(students_file_with_good_vectors, "rt", encoding="UTF-8") as file:
@@ -46,7 +81,6 @@ class BaseLineTester:
                 student, group = students_line.strip().split(";")
                 if student == self.student_name:
                     return student, group
-
 
     def create_base_lines_file_structures(self, students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
                                           base_path=BASE_PATH):
@@ -60,7 +94,7 @@ class BaseLineTester:
         os.makedirs(path_0, exist_ok=True)
         os.makedirs(path_1, exist_ok=True)
         self._create_blank_vectors_excel_table(str(path_0), student=student,
-                                    base_path=base_path, students_group=group)
+                                               base_path=base_path, students_group=group)
         return student, group
 
     def _init_vectors_list(self, base_path, students_group):
@@ -118,9 +152,7 @@ class BaseLineTester:
         return eq_net
 
 
-
 if __name__ == "__main__":
-    
     # name = "Савина Анастасия Викторовна"
     # 
     # blt = BaseLineTester(name)
@@ -129,7 +161,5 @@ if __name__ == "__main__":
     #                                       base_path=r"/Users/mikhail_vystrchil/Downloads")
     # 
     BaseLineTester.check_base_lines_for_students_group(students_file="ГГ-21.csv",
-                                                  students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
-                                                  base_path=r"/Users/mikhail_vystrchil/Downloads")
-
-
+                                                       students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
+                                                       base_path=r"/Users/mikhail_vystrchil/Downloads")

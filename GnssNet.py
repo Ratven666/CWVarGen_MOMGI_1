@@ -110,6 +110,7 @@ class GnssNet:
         Визуализирует сеть в 2D.
         """
         fig, ax = plt.subplots()
+        ax.set_aspect('equal')
 
         for point in self.points:
             ax.text(x=point.x,

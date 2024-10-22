@@ -15,15 +15,29 @@ from GnssVector import GnssVector
 
 class VariantGenerator:
 
-    def __init__(self, student_name: str, num_of_series=NUM_OF_SERIES):
-        self.student_name = student_name.strip()
-        self.num_of_series = num_of_series
-        random.seed(self._get_hash())
-        self.base_gnss_net = GnssNetGenerator(num_points=NUM_POINTS,
+    def __init__(self, student_name: str, num_of_series=NUM_OF_SERIES, num_points=NUM_POINTS,
                                               count_of_base_point=COUNT_OF_BASE_POINTS,
                                               min_distance=MIN_DISTANCE,
                                               xy_limits=XY_LIMITS,
-                                              z_limit=Z_LIMITS).create_gnss_net()
+                                              z_limit=Z_LIMITS,
+                                              num_of_measure=NUM_OF_MEASURES,
+                                              d_time=D_TIME,
+                                              gnss_displacement=GNSS_DISPLACEMENT,
+                                              pass_point_prob=PASS_POINT_PROB,
+                                              ):
+        self.student_name = student_name.strip()
+        self.num_of_series = num_of_series
+        self.num_points = num_points
+        self.num_of_measure = num_of_measure
+        self.d_time = d_time
+        self.gnss_displacement = gnss_displacement
+        self.pass_point_prob = pass_point_prob
+        random.seed(self._get_hash())
+        self.base_gnss_net = GnssNetGenerator(num_points=num_points,
+                                              count_of_base_point=count_of_base_point,
+                                              min_distance=min_distance,
+                                              xy_limits=xy_limits,
+                                              z_limit=z_limit).create_gnss_net()
         self.measured_gnss_nets = []
         self._create_measures()
         self.eq_net = None
@@ -44,10 +58,10 @@ class VariantGenerator:
         for series in range(self.num_of_series):
             gnss_net_copy = deepcopy(self.base_gnss_net)
             gmg = GnssMeasureGenerator(gnss_net_copy,
-                                       d_time=D_TIME,
-                                       num_of_measure=NUM_OF_MEASURES,
-                                       gnss_displacement=GNSS_DISPLACEMENT,
-                                       pass_point_prob=PASS_POINT_PROB,
+                                       d_time=self.d_time,
+                                       num_of_measure=self.num_of_measure,
+                                       gnss_displacement=self.gnss_displacement,
+                                       pass_point_prob=self.pass_point_prob,
                                        month=month,
                                        day=day)
             self.measured_gnss_nets.append(gnss_net_copy)
@@ -57,7 +71,7 @@ class VariantGenerator:
         blank_vectors_dict = {}
         for series in range(self.num_of_series):
             key = str(series + 1)
-            blank_vectors = [["####", "####"] for _ in range(NUM_POINTS - 1)]
+            blank_vectors = [["####", "####"] for _ in range(self.num_points - 1)]
             blank_vectors_dict[key] = blank_vectors
         with open(os.path.join(vectors_path, f"Vectors_{self.student_name}.json"), "w") as file:
             file.write(json.dumps(blank_vectors_dict, sort_keys=True, indent=4))

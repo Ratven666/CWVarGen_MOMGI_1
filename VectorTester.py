@@ -6,7 +6,8 @@ from copy import deepcopy
 import pandas as pd
 from tabulate import tabulate
 
-from CONFIG import BASE_PATH, NUM_POINTS
+from CONFIG import BASE_PATH, NUM_POINTS, NUM_OF_SERIES, COUNT_OF_BASE_POINTS, MIN_DISTANCE, XY_LIMITS, Z_LIMITS, \
+    NUM_OF_MEASURES, D_TIME, GNSS_DISPLACEMENT, PASS_POINT_PROB
 from EqualisedNetwork import EqualisedNetwork
 from GnssNet import GnssNet, PointNameException
 from GnssVector import GnssVector
@@ -17,9 +18,27 @@ class VectorTester:
 
     _results = {}
 
-    def __init__(self, student_name):
+    def __init__(self, student_name, num_of_series=NUM_OF_SERIES, num_points=NUM_POINTS,
+                                              count_of_base_point=COUNT_OF_BASE_POINTS,
+                                              min_distance=MIN_DISTANCE,
+                                              xy_limits=XY_LIMITS,
+                                              z_limit=Z_LIMITS,
+                                              num_of_measure=NUM_OF_MEASURES,
+                                              d_time=D_TIME,
+                                              gnss_displacement=GNSS_DISPLACEMENT,
+                                              pass_point_prob=PASS_POINT_PROB,
+                 ):
         self.student_name = student_name
-        self.vg = VariantGenerator(student_name)
+        self.vg = VariantGenerator(student_name, num_of_series=num_of_series, num_points=num_points,
+                                              count_of_base_point=count_of_base_point,
+                                              min_distance=min_distance,
+                                              xy_limits=xy_limits,
+                                              z_limit=z_limit,
+                                              num_of_measure=num_of_measure,
+                                              d_time=d_time,
+                                              gnss_displacement=gnss_displacement,
+                                              pass_point_prob=pass_point_prob,
+                                   )
         self.vectors_net = []
 
     @classmethod
@@ -27,6 +46,15 @@ class VectorTester:
                                          students_file,
                                          students_file_with_good_vectors,
                                          base_path=BASE_PATH,
+                                         num_of_series=NUM_OF_SERIES, num_points=NUM_POINTS,
+                                         count_of_base_point=COUNT_OF_BASE_POINTS,
+                                         min_distance=MIN_DISTANCE,
+                                         xy_limits=XY_LIMITS,
+                                         z_limit=Z_LIMITS,
+                                         num_of_measure=NUM_OF_MEASURES,
+                                         d_time=D_TIME,
+                                         gnss_displacement=GNSS_DISPLACEMENT,
+                                         pass_point_prob=PASS_POINT_PROB
                                          ):
         result = {"student": [],
                   "group": [],
@@ -46,7 +74,16 @@ class VectorTester:
                     students_file_with_good_vectors_list.append(student_line)
                     student_result = "OK"
                 else:
-                    student_result = cls(student).check_vectors(base_path=base_path, students_group=group)
+                    student_result = cls(student, num_of_series=num_of_series, num_points=num_points,
+                                              count_of_base_point=count_of_base_point,
+                                              min_distance=min_distance,
+                                              xy_limits=xy_limits,
+                                              z_limit=z_limit,
+                                              num_of_measure=num_of_measure,
+                                              d_time=d_time,
+                                              gnss_displacement=gnss_displacement,
+                                              pass_point_prob=pass_point_prob,
+                                         ).check_vectors(base_path=base_path, students_group=group)
                     if student_result == "OK":
                         students_file_with_good_vectors_list.append(student_line)
                 result["student"].append(student)
