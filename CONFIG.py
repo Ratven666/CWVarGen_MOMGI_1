@@ -35,3 +35,9 @@ MSE_A = 5
 MSE_B = 3
 
 MSE_Z_SCALER = 5
+
+
+
+######################
+
+BASE_LINE_TOLERANCE = 1e-5

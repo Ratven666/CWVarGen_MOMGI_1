@@ -94,7 +94,9 @@ class VectorTester:
                 sfwgv.write(student_line)
 
         os.makedirs(os.path.join("Результаты проверки"), exist_ok=True)
-        path = os.path.join("Результаты проверки", f"Проверка_векторов_{str(datetime.datetime.now())}.txt")
+        os.makedirs(os.path.join("Результаты проверки", "Проверка_векторов"), exist_ok=True)
+        path = os.path.join("Результаты проверки", "Проверка_векторов",
+                            f"Проверка_векторов_{str(datetime.datetime.now())}.txt")
 
         with open(path, "w") as file:
             df = pd.DataFrame(result)
@@ -175,8 +177,6 @@ class VectorTester:
             color = "r" if series == 1 else "b"
             vectors_net = []
             for vector in vectors:
-                # v = GnssVector(self.vg.base_gnss_net, point_0_name=vector[0],
-                #                point_1_name=vector[1], color=color, is_measured_vector=True)
                 v = GnssVector(self.vg.measured_gnss_nets[series - 1], point_0_name=vector[0],
                                point_1_name=vector[1], color=color, is_measured_vector=True)
                 vectors_net.append(v)
@@ -243,9 +243,10 @@ class VectorTester:
 
 
 
+
 if __name__ == "__main__":
     # name = "Савина Анастасия Викторовна"
-    name = "Емелин Семён Викторович"
+    name = "Александров Даниил Русланович"
 
     vt = VectorTester(name)
     #

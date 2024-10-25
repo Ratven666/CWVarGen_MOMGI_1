@@ -22,9 +22,4 @@ if __name__ == "__main__":
     start_checking(students_file="ГГ-21.csv",
                    students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
                    base_path=r"/Users/mikhail_vystrchil/Downloads")
-    # VectorTester.check_vectors_for_students_group(students_file="ГГ-21.csv",
-    #                                               students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
-    #                                               base_path=r"/Users/mikhail_vystrchil/Downloads")
-    # BaseLineTester.check_base_lines_for_students_group(students_file="ГГ-21.csv",
-    #                                               students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
-    #                                               base_path=r"/Users/mikhail_vystrchil/Downloads")
+
