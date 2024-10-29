@@ -103,8 +103,10 @@ class BaseLineTester:
             student, group = result
         else:
             return
-        path_0 = os.path.join(base_path, "Базовые линии", "Шаблоны таблиц", str(group), str(student))
-        path_1 = os.path.join(base_path, "Базовые линии", "Заполненные шаблоны")
+        path_0 = os.path.join(base_path, f"ММОМГИ_КР_{datetime.datetime.now().year}",
+                              "Базовые линии", "Шаблоны таблиц", str(group), str(student))
+        path_1 = os.path.join(base_path, f"ММОМГИ_КР_{datetime.datetime.now().year}",
+                              "Базовые линии", "Заполненные шаблоны")
         os.makedirs(path_0, exist_ok=True)
         os.makedirs(path_1, exist_ok=True)
         self._create_blank_vectors_excel_table(str(path_0), student=student,
@@ -112,8 +114,9 @@ class BaseLineTester:
         return student, group
 
     def _is_student_put_bl_file_in_dr(self, base_path, student, group):
-        file_path = os.path.join(base_path, "Базовые линии", "Заполненные шаблоны",
-                              f"Base_lines_{group}_{student}.xlsx")
+        file_path = os.path.join(base_path, f"ММОМГИ_КР_{datetime.datetime.now().year}",
+                                 "Базовые линии", "Заполненные шаблоны",
+                                  f"Base_lines_{group}_{student}.xlsx")
         return os.path.isfile(file_path)
 
     def _init_vectors_list(self, base_path, students_group):
@@ -153,7 +156,6 @@ class BaseLineTester:
             self._init_vectors_df(base_path, students_group)
         blank_df = deepcopy(self.vectors_df)
         blank_df = blank_df.applymap(lambda x: np.nan)
-        blank_df.to_excel('output.xlsx', sheet_name='Лист1', index=True)
         return blank_df
 
     def _create_blank_vectors_excel_table(self, path, student,
@@ -169,7 +171,8 @@ class BaseLineTester:
 
     def _get_diff_df(self, base_path):
         correct_vectors_df = deepcopy(self.vectors_df)
-        file_path = os.path.join(base_path, "Базовые линии", "Заполненные шаблоны",
+        file_path = os.path.join(base_path, f"ММОМГИ_КР_{datetime.datetime.now().year}",
+                                 "Базовые линии", "Заполненные шаблоны",
                                  f"Base_lines_{self.group}_{self.student_name}.xlsx")
         student_vector_df = pd.read_excel(file_path, index_col=0)
         df_diff = correct_vectors_df - student_vector_df
