@@ -40,4 +40,12 @@ MSE_Z_SCALER = 5
 
 ######################
 
-BASE_LINE_TOLERANCE = 1e-5
+# BASE_LINE_TOLERANCE = 1e-5
+
+BASE_LINE_TOLERANCE = {"slope_distance": 1e-4,
+                       "azimuth": 1e-5,
+                       "zenith": 1e-5,
+                       "mse_s_dist": 1e-5,
+                       "mse_azimuth": 1e-5,
+                       "mse_zenith": 1e-5,
+                       }

@@ -24,7 +24,7 @@ class BaseLineTester:
                  gnss_displacement=GNSS_DISPLACEMENT,
                  pass_point_prob=PASS_POINT_PROB):
         self.student_name = student_name
-        self.tolerance = tolerance
+        self.tolerances = tolerance
         self.group = None
         self.vg = VariantGenerator(student_name, num_of_series=num_of_series, num_points=num_points,
                                    count_of_base_point=count_of_base_point,
@@ -164,7 +164,7 @@ class BaseLineTester:
         path = os.path.join(path, f"Base_lines_{students_group}_{student}.xlsx")
         blank_df.to_excel(path, sheet_name='Лист1', index=True)
 
-    def check_base_lines(self, base_path, tolerance=1e-5):
+    def check_base_lines(self, base_path):
         diff_df = self._get_diff_df(base_path=base_path)
         check_df = self._check_diff_df_with_tolerance(diff_df)
         self._save_check_result(check_df)
@@ -178,6 +178,16 @@ class BaseLineTester:
         df_diff = correct_vectors_df - student_vector_df
         return df_diff
 
+    # def _check_diff_df_with_tolerance(self, diff_df):
+    #     def is_less_than(value, tolerance):
+    #         if pd.isna(value):
+    #             return np.nan
+    #         return abs(value) < tolerance
+    #
+    #     # Применение функции к каждому элементу датафрейма
+    #     df_check = diff_df.applymap(lambda x: is_less_than(x, self.tolerance))
+    #     return df_check
+
     def _check_diff_df_with_tolerance(self, diff_df):
         def is_less_than(value, tolerance):
             if pd.isna(value):
@@ -185,7 +195,12 @@ class BaseLineTester:
             return abs(value) < tolerance
 
         # Применение функции к каждому элементу датафрейма
-        df_check = diff_df.applymap(lambda x: is_less_than(x, self.tolerance))
+        # df_check = diff_df.applymap(lambda x: is_less_than(x, self.tolerance))
+
+        # df_check = diff_df.applymap(lambda x: is_less_than(x, self.tolerances[diff_df.columns.get_loc(x.name)]))
+        # df_check = diff_df.applymap(lambda x: is_less_than(x, self.tolerances[diff_df.columns[diff_df.columns.get_loc(x.name)]]))
+        df_check = diff_df.apply(lambda col: col.apply(lambda x: is_less_than(x, self.tolerances[col.name])))
+
         return df_check
 
     def _save_check_result(self, check_df):
