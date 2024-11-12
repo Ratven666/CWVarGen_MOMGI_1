@@ -49,7 +49,9 @@ class VariantGenerator:
 
     def _get_start_measure_month_day(self):
         current_time = datetime.datetime.now()
-        month = random.randint(1, current_time.month - 1)
+        # print(current_time, current_time.month)
+        # month = random.randint(1, current_time.month - 1)
+        month = random.randint(1, 10 - 1)
         day = random.randint(1, 28 - self.num_of_series)
         return month, day
 

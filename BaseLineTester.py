@@ -151,7 +151,7 @@ class BaseLineTester:
         self.vectors_df = df
         return df
 
-    def _create_blank_vectors_df(self, base_path=BASE_PATH, students_group=""):
+    def _create_blank_vectors_df(self, base_path, students_group):
         if self.vectors_df is None:
             self._init_vectors_df(base_path, students_group)
         blank_df = deepcopy(self.vectors_df)
@@ -178,29 +178,12 @@ class BaseLineTester:
         df_diff = correct_vectors_df - student_vector_df
         return df_diff
 
-    # def _check_diff_df_with_tolerance(self, diff_df):
-    #     def is_less_than(value, tolerance):
-    #         if pd.isna(value):
-    #             return np.nan
-    #         return abs(value) < tolerance
-    #
-    #     # Применение функции к каждому элементу датафрейма
-    #     df_check = diff_df.applymap(lambda x: is_less_than(x, self.tolerance))
-    #     return df_check
-
     def _check_diff_df_with_tolerance(self, diff_df):
         def is_less_than(value, tolerance):
             if pd.isna(value):
                 return np.nan
             return abs(value) < tolerance
-
-        # Применение функции к каждому элементу датафрейма
-        # df_check = diff_df.applymap(lambda x: is_less_than(x, self.tolerance))
-
-        # df_check = diff_df.applymap(lambda x: is_less_than(x, self.tolerances[diff_df.columns.get_loc(x.name)]))
-        # df_check = diff_df.applymap(lambda x: is_less_than(x, self.tolerances[diff_df.columns[diff_df.columns.get_loc(x.name)]]))
         df_check = diff_df.apply(lambda col: col.apply(lambda x: is_less_than(x, self.tolerances[col.name])))
-
         return df_check
 
     def _save_check_result(self, check_df):
@@ -223,15 +206,47 @@ class BaseLineTester:
         self.eq_net = eq_net
         return eq_net
 
+    @classmethod
+    def get_vectors_for_student(cls, student_name, student_group,
+                                base_path=BASE_PATH,
+                                tolerance=BASE_LINE_TOLERANCE,
+                                num_of_series=NUM_OF_SERIES, num_points=NUM_POINTS,
+                                count_of_base_point=COUNT_OF_BASE_POINTS,
+                                min_distance=MIN_DISTANCE,
+                                xy_limits=XY_LIMITS,
+                                z_limit=Z_LIMITS,
+                                num_of_measure=NUM_OF_MEASURES,
+                                d_time=D_TIME,
+                                gnss_displacement=GNSS_DISPLACEMENT,
+                                pass_point_prob=PASS_POINT_PROB):
+        bvt = cls(student_name=student_name, tolerance=tolerance, num_of_series=num_of_series, num_points=num_points,
+                  count_of_base_point=count_of_base_point,
+                  min_distance=min_distance,
+                  xy_limits=xy_limits,
+                  z_limit=z_limit,
+                  num_of_measure=num_of_measure,
+                  d_time=d_time,
+                  gnss_displacement=gnss_displacement,
+                  pass_point_prob=pass_point_prob)
+        bvt._init_vectors_df(base_path=base_path, students_group=student_group)
+        print(tabulate(bvt.vectors_df, headers='keys', tablefmt='pretty'))
+
 
 if __name__ == "__main__":
-    # name = "Савина Анастасия Викторовна"
+    # name = "Чернецова Елизавета Романовна"
     # 
     # blt = BaseLineTester(name)
     # 
     # blt.create_base_lines_file_structures(students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
     #                                       base_path=r"/Users/mikhail_vystrchil/Downloads")
     # 
-    BaseLineTester.check_base_lines_for_students_group(students_file="ГГ-21.csv",
-                                                       students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
-                                                       base_path=r"/Users/mikhail_vystrchil/Downloads")
+    # BaseLineTester.check_base_lines_for_students_group(students_file="ГГ-21.csv",
+    #                                                    students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
+    #                                                    base_path=r"/Users/mikhail_vystrchil/Downloads")
+
+
+
+    BaseLineTester.get_vectors_for_student(student_name="Корчагина Мария Алексеевна",
+                                           student_group="ГГ-21-2",
+                                           base_path=r"/Users/mikhail_vystrchil/Downloads")
+

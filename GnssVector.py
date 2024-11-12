@@ -133,16 +133,30 @@ class GnssVector:
         if show:
             plt.show()
 
+    # def _get_s_dist_a_coefficients_df(self):
+    #     coefficient_dict = {}
+    #     if self.point_0.is_rover():
+    #         coefficient_dict[f"{self.point_0.name}_x"] = -math.cos(self.azimuth)
+    #         coefficient_dict[f"{self.point_0.name}_y"] = -math.sin(self.azimuth)
+    #         coefficient_dict[f"{self.point_0.name}_z"] = -self.dz / self.s_dist
+    #     if self.point_1.is_rover():
+    #         coefficient_dict[f"{self.point_1.name}_x"] = math.cos(self.azimuth)
+    #         coefficient_dict[f"{self.point_1.name}_y"] = math.sin(self.azimuth)
+    #         coefficient_dict[f"{self.point_1.name}_z"] = self.dz / self.s_dist
+    #     coefficient_dict = pd.DataFrame([coefficient_dict],
+    #                                     index=[f"s_dist_{self.point_0.name}-{self.point_1.name}"])
+    #     return coefficient_dict
+
     def _get_s_dist_a_coefficients_df(self):
         coefficient_dict = {}
         if self.point_0.is_rover():
-            coefficient_dict[f"{self.point_0.name}_x"] = -math.cos(self.azimuth)
-            coefficient_dict[f"{self.point_0.name}_y"] = -math.sin(self.azimuth)
-            coefficient_dict[f"{self.point_0.name}_z"] = -self.dz / self.s_dist
+            coefficient_dict[f"{self.point_0.name}_x"] = -math.sin(self.zenith) * math.cos(self.azimuth)
+            coefficient_dict[f"{self.point_0.name}_y"] = -math.sin(self.zenith) * math.sin(self.azimuth)
+            coefficient_dict[f"{self.point_0.name}_z"] = -math.cos(self.zenith)
         if self.point_1.is_rover():
-            coefficient_dict[f"{self.point_1.name}_x"] = math.cos(self.azimuth)
-            coefficient_dict[f"{self.point_1.name}_y"] = math.sin(self.azimuth)
-            coefficient_dict[f"{self.point_1.name}_z"] = self.dz / self.s_dist
+            coefficient_dict[f"{self.point_1.name}_x"] = math.sin(self.zenith) * math.cos(self.azimuth)
+            coefficient_dict[f"{self.point_1.name}_y"] = math.sin(self.zenith) * math.sin(self.azimuth)
+            coefficient_dict[f"{self.point_1.name}_z"] = math.cos(self.zenith)
         coefficient_dict = pd.DataFrame([coefficient_dict],
                                         index=[f"s_dist_{self.point_0.name}-{self.point_1.name}"])
         return coefficient_dict
@@ -159,24 +173,75 @@ class GnssVector:
                                         index=[f"azimuth_{self.point_0.name}-{self.point_1.name}"])
         return coefficient_dict
 
+    # def _get_zenith_a_coefficients_df(self):
+    #     coefficient_dict = {}
+    #     if self.point_0.is_rover():
+    #         coefficient_dict[f"{self.point_0.name}_x"] = ((self.dz * math.cos(self.azimuth)) /
+    #                                                                 (self.dz ** 2 + self.h_dist ** 2)) * -1
+    #         coefficient_dict[f"{self.point_0.name}_y"] = ((self.dz * math.sin(self.azimuth)) /
+    #                                                                 (self.dz ** 2 + self.h_dist ** 2)) * -1
+    #         coefficient_dict[f"{self.point_0.name}_z"] = (self.h_dist / (self.h_dist ** 2 + self.dz ** 2))
+    #
+    #     if self.point_1.is_rover():
+    #         coefficient_dict[f"{self.point_1.name}_x"] = ((self.dz * math.cos(self.azimuth)) /
+    #                                                               (self.dz ** 2 + self.h_dist ** 2))
+    #         coefficient_dict[f"{self.point_1.name}_y"] = ((self.dz * math.sin(self.azimuth)) /
+    #                                                               (self.dz ** 2 + self.h_dist ** 2))
+    #         coefficient_dict[f"{self.point_1.name}_z"] = (self.h_dist / (self.h_dist ** 2 + self.dz ** 2)) * (-1)
+    #     coefficient_dict = pd.DataFrame([coefficient_dict],
+    #                                     index=[f"zenith_{self.point_0.name}-{self.point_1.name}"])
+    #     return coefficient_dict
+
     def _get_zenith_a_coefficients_df(self):
         coefficient_dict = {}
         if self.point_0.is_rover():
-            coefficient_dict[f"{self.point_0.name}_x"] = ((self.dz * math.cos(self.azimuth)) /
-                                                                    (self.dz ** 2 + self.h_dist ** 2)) * -1
-            coefficient_dict[f"{self.point_0.name}_y"] = ((self.dz * math.sin(self.azimuth)) /
-                                                                    (self.dz ** 2 + self.h_dist ** 2)) * -1
-            coefficient_dict[f"{self.point_0.name}_z"] = (self.h_dist / (self.h_dist ** 2 + self.dz ** 2))
+            coefficient_dict[f"{self.point_0.name}_x"] = (-1) * (math.cos(self.zenith) * math.cos(self.azimuth)) / (self.s_dist)
+            coefficient_dict[f"{self.point_0.name}_y"] = (-1) * (math.cos(self.zenith) * math.sin(self.azimuth)) / (self.s_dist)
+            coefficient_dict[f"{self.point_0.name}_z"] = (math.sin(self.zenith)) / (self.s_dist)
 
         if self.point_1.is_rover():
-            coefficient_dict[f"{self.point_1.name}_x"] = ((self.dz * math.cos(self.azimuth)) /
-                                                                  (self.dz ** 2 + self.h_dist ** 2))
-            coefficient_dict[f"{self.point_1.name}_y"] = ((self.dz * math.sin(self.azimuth)) /
-                                                                  (self.dz ** 2 + self.h_dist ** 2))
-            coefficient_dict[f"{self.point_1.name}_z"] = (self.h_dist / (self.h_dist ** 2 + self.dz ** 2)) * -1
+            coefficient_dict[f"{self.point_1.name}_x"] = (math.cos(self.zenith) * math.cos(self.azimuth)) / (self.s_dist)
+            coefficient_dict[f"{self.point_1.name}_y"] = (math.cos(self.zenith) * math.sin(self.azimuth)) / (self.s_dist)
+            coefficient_dict[f"{self.point_1.name}_z"] = (math.sin(self.zenith)) / (self.s_dist) * (-1)
         coefficient_dict = pd.DataFrame([coefficient_dict],
                                         index=[f"zenith_{self.point_0.name}-{self.point_1.name}"])
         return coefficient_dict
+
+
+# НЕ ПРАВИЛЬНО!!!!
+    # def _get_zenith_a_coefficients_df(self):
+    #     coefficient_dict = {}
+    #     if self.point_0.is_rover():
+    #         coefficient_dict[f"{self.point_0.name}_x"] = -2 * math.cos(self.zenith) * math.cos(self.azimuth)
+    #         coefficient_dict[f"{self.point_0.name}_y"] = -2 * math.cos(self.zenith) * math.sin(self.azimuth)
+    #         coefficient_dict[f"{self.point_0.name}_z"] = ((1 - math.sin(self.zenith) * math.cos(self.zenith)) /
+    #                                                       (self.s_dist * math.sin(self.zenith)))
+    #
+    #     if self.point_1.is_rover():
+    #         coefficient_dict[f"{self.point_1.name}_x"] = 2 * math.cos(self.zenith) * math.cos(self.azimuth)
+    #         coefficient_dict[f"{self.point_1.name}_y"] = 2 * math.cos(self.zenith) * math.sin(self.azimuth)
+    #         coefficient_dict[f"{self.point_1.name}_z"] = -((1 - math.sin(self.zenith) * math.cos(self.zenith)) /
+    #                                                        (self.s_dist * math.sin(self.zenith)))
+    #     coefficient_dict = pd.DataFrame([coefficient_dict],
+    #                                     index=[f"zenith_{self.point_0.name}-{self.point_1.name}"])
+    #     return coefficient_dict
+
+    # def _get_zenith_a_coefficients_df(self):
+    #     coefficient_dict = {}
+    #     if self.point_0.is_rover():
+    #         coefficient_dict[f"{self.point_0.name}_x"] = -1 * (self.dz * self.dx) / ((1 - self.dz ** 2 / self.s_dist ** 2) ** 0.5 * (self.s_dist ** 2) ** 1.5)
+    #         coefficient_dict[f"{self.point_0.name}_y"] = -1 * (self.dz * self.dy) / ((1 - self.dz ** 2 / self.s_dist ** 2) ** 0.5 * (self.s_dist ** 2) ** 1.5)
+    #         coefficient_dict[f"{self.point_0.name}_z"] = 1 / (self.s_dist * (1 - self.dz ** 2 / self.s_dist ** 2) ** 0.5) - \
+    #         (self.dz ** 2) / (((self.s_dist ** 2) ** 1.5) * (1 - self.dz ** 2 / self.s_dist ** 2) ** 0.5)
+    #
+    #     if self.point_1.is_rover():
+    #         coefficient_dict[f"{self.point_1.name}_x"] = (self.dz * self.dx) / ((1 - self.dz ** 2 / self.s_dist ** 2) ** 0.5 * (self.s_dist ** 2) ** 1.5)
+    #         coefficient_dict[f"{self.point_1.name}_y"] = 1 * (self.dz * self.dy) / ((1 - self.dz ** 2 / self.s_dist ** 2) ** 0.5 * (self.s_dist ** 2) ** 1.5)
+    #         coefficient_dict[f"{self.point_1.name}_z"] = (1 / (self.s_dist * (1 - self.dz ** 2 / self.s_dist ** 2) ** 0.5) - \
+    #         (self.dz ** 2) / (((self.s_dist ** 2) ** 1.5) * (1 - self.dz ** 2 / self.s_dist ** 2) ** 0.5)) * (-1)
+    #     coefficient_dict = pd.DataFrame([coefficient_dict],
+    #                                     index=[f"zenith_{self.point_0.name}-{self.point_1.name}"])
+    #     return coefficient_dict
 
     def get_a_coefficients_df(self):
         df = pd.DataFrame()

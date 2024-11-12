@@ -91,7 +91,11 @@ class EqualisedNetwork:
     def get_mu(self):
         v = self.get_v_ds().to_numpy()
         p = self.get_p_coefficients_df().to_numpy()
-        mu = v.T @ p @ v
+        a = self._get_a_coefficients_df()
+        r = a.shape[0] - a.shape[1]
+        if r == 0:
+            return np.nan
+        mu = (v.T @ p @ v / r) ** 0.5
         return mu
 
     def calculate(self):
@@ -107,8 +111,7 @@ class EqualisedNetwork:
         p = self.get_p_coefficients_df().to_numpy()
         n = a.T @ p @ a
         mu = self.get_mu()
-
-        q = mu * np.linalg.inv(n)
+        q = (mu ** 2) * np.linalg.inv(n)
         q_df = pd.DataFrame(q, columns=point_idx, index=point_idx)
         for vector in self.gnss_vectors:
             for point in vector.point_0, vector.point_1:
@@ -116,8 +119,9 @@ class EqualisedNetwork:
                     p_np = q_df[[f"{point.name}_x",
                                  f"{point.name}_y"]].loc[[f"{point.name}_x",
                                                           f"{point.name}_y"]].to_numpy()
-                    theta = math.degrees(math.atan2((2 * p_np[0][1]), (p_np[0][1] - p_np[1][1])) / 2)
-                    theta = theta + 360 if theta < 0 else theta
+                    # theta = math.degrees(math.atan2((2 * p_np[0][1]), (p_np[0][1] - p_np[1][1])) / 2)
+                    theta = math.degrees(math.atan2((2 * p_np[0][1]), (p_np[0][0] - p_np[1][1])))
+                    theta = (theta + 360) / 2 if theta < 0 else theta / 2
                     q = ((p_np[0][0] - p_np[1][1]) ** 2 + 4 * p_np[1][0] ** 2) ** 0.5
                     a = ((p_np[0][0] + p_np[1][1] + q) / 2) ** 0.5
                     b = ((p_np[0][0] + p_np[1][1] - q) / 2) ** 0.5

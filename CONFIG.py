@@ -49,3 +49,6 @@ BASE_LINE_TOLERANCE = {"slope_distance": 1e-4,
                        "mse_azimuth": 1e-5,
                        "mse_zenith": 1e-5,
                        }
+
+EQUALISATION_TOLERANCE = {}
+
