@@ -103,6 +103,20 @@ class EqualisedNetwork:
         self.coord_df =  self.get_final_coordinates()
         self.result_df = pd.concat([self.coord_df, self.mse_df])
 
+    def _get_k_matrix_df(self):
+        a = self._get_a_coefficients_df()
+        point_idx = a.columns
+        a = a.to_numpy()
+        p = self.get_p_coefficients_df().to_numpy()
+        n = a.T @ p @ a
+        mu = self.get_mu()
+        q = np.linalg.inv(n)
+        k = (mu ** 2) * q
+        n_df = pd.DataFrame(n, columns=point_idx, index=point_idx)
+        q_df = pd.DataFrame(q, columns=point_idx, index=point_idx)
+        k_df = pd.DataFrame(k, columns=point_idx, index=point_idx)
+        return n_df, q_df, k_df
+
     def _calk_points_mse_ellipses(self):
         mse_dict = {}
         a = self._get_a_coefficients_df()

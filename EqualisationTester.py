@@ -13,7 +13,8 @@ from VariantGenerator import VariantGenerator
 
 class EqualisationTester:
 
-    def __init__(self, student_name, tolerance=EQUALISATION_TOLERANCE, num_of_series=NUM_OF_SERIES, num_points=NUM_POINTS,
+    def __init__(self, student_name, tolerance=EQUALISATION_TOLERANCE, num_of_series=NUM_OF_SERIES,
+                 num_points=NUM_POINTS,
                  count_of_base_point=COUNT_OF_BASE_POINTS,
                  min_distance=MIN_DISTANCE,
                  xy_limits=XY_LIMITS,
@@ -39,20 +40,20 @@ class EqualisationTester:
 
     @classmethod
     def check_equalisation_result_for_students_group(cls,
-                                            students_file,
-                                            students_file_with_good_vectors,
-                                            base_path=BASE_PATH,
-                                            tolerance=EQUALISATION_TOLERANCE,
-                                            num_of_series=NUM_OF_SERIES, num_points=NUM_POINTS,
-                                            count_of_base_point=COUNT_OF_BASE_POINTS,
-                                            min_distance=MIN_DISTANCE,
-                                            xy_limits=XY_LIMITS,
-                                            z_limit=Z_LIMITS,
-                                            num_of_measure=NUM_OF_MEASURES,
-                                            d_time=D_TIME,
-                                            gnss_displacement=GNSS_DISPLACEMENT,
-                                            pass_point_prob=PASS_POINT_PROB
-                                            ):
+                                                     students_file,
+                                                     students_file_with_good_vectors,
+                                                     base_path=BASE_PATH,
+                                                     tolerance=EQUALISATION_TOLERANCE,
+                                                     num_of_series=NUM_OF_SERIES, num_points=NUM_POINTS,
+                                                     count_of_base_point=COUNT_OF_BASE_POINTS,
+                                                     min_distance=MIN_DISTANCE,
+                                                     xy_limits=XY_LIMITS,
+                                                     z_limit=Z_LIMITS,
+                                                     num_of_measure=NUM_OF_MEASURES,
+                                                     d_time=D_TIME,
+                                                     gnss_displacement=GNSS_DISPLACEMENT,
+                                                     pass_point_prob=PASS_POINT_PROB
+                                                     ):
         try:
             with open(students_file_with_good_vectors, "rt", encoding="UTF-8") as sfwgv:
                 good_vectors_student = sfwgv.readlines()
@@ -66,20 +67,20 @@ class EqualisationTester:
                     print(student_line)
                     student, group = student_line.strip().split(";")
                     eq_t = cls(student_name=student, num_of_series=num_of_series, num_points=num_points,
-                              tolerance=tolerance,
-                              count_of_base_point=count_of_base_point,
-                              min_distance=min_distance,
-                              xy_limits=xy_limits,
-                              z_limit=z_limit,
-                              num_of_measure=num_of_measure,
-                              d_time=d_time,
-                              gnss_displacement=gnss_displacement,
-                              pass_point_prob=pass_point_prob)
+                               tolerance=tolerance,
+                               count_of_base_point=count_of_base_point,
+                               min_distance=min_distance,
+                               xy_limits=xy_limits,
+                               z_limit=z_limit,
+                               num_of_measure=num_of_measure,
+                               d_time=d_time,
+                               gnss_displacement=gnss_displacement,
+                               pass_point_prob=pass_point_prob)
                     eq_t.create_equalization_result_file_structures(
                         students_file_with_good_vectors=students_file_with_good_vectors,
                         base_path=base_path)
                     if eq_t._is_student_put_eq_r_file_in_dr(base_path=base_path,
-                                                         student=student, group=group):
+                                                            student=student, group=group):
                         eq_t.group = group
                         eq_t.check_equalization(base_path=base_path)
                     else:
@@ -88,7 +89,7 @@ class EqualisationTester:
     def _is_student_put_eq_r_file_in_dr(self, base_path, student, group):
         file_path = os.path.join(base_path, f"ММОМГИ_КР_{datetime.datetime.now().year}",
                                  "Результаты уравнивания", "Заполненные шаблоны",
-                                  f"Equalisation_result_{group}_{student}.xlsx")
+                                 f"Equalisation_result_{group}_{student}.xlsx")
         return os.path.isfile(file_path)
 
     def _get_eq_net(self, base_path, students_group):
@@ -120,6 +121,8 @@ class EqualisationTester:
                                  "Результаты уравнивания", "Заполненные шаблоны",
                                  f"Equalisation_result_{self.group}_{self.student_name}.xlsx")
         student_equalisation_df = pd.read_excel(file_path, index_col=0)
+        # print(tabulate(student_equalisation_df, headers='keys', tablefmt='pretty'))
+        student_equalisation_df = student_equalisation_df.astype(float)
         df_diff = correct_equalization_df - student_equalisation_df
         return df_diff
 
@@ -128,6 +131,7 @@ class EqualisationTester:
             if pd.isna(value):
                 return np.nan
             return abs(value) < tolerance
+
         # df_check = diff_df.apply(lambda col: col.apply(lambda x: is_less_than(x, self.tolerances[col.name])))
         df_check = diff_df.apply(lambda col: col.apply(lambda x: is_less_than(x, self.tolerances)))
         return df_check
@@ -145,7 +149,7 @@ class EqualisationTester:
         return blank_df
 
     def _create_blank_equalization_excel_table(self, path, student,
-                                          base_path, students_group=""):
+                                               base_path, students_group=""):
         blank_df = self._create_blank_equalization_df(base_path=base_path, students_group=students_group)
         path = os.path.join(path, f"Equalisation_result_{students_group}_{student}.xlsx")
         blank_df.to_excel(path, sheet_name='Лист1', index=True)
@@ -172,8 +176,39 @@ class EqualisationTester:
         os.makedirs(path_0, exist_ok=True)
         os.makedirs(path_1, exist_ok=True)
         self._create_blank_equalization_excel_table(str(path_0), student=student,
-                                               base_path=base_path, students_group=group)
+                                                    base_path=base_path, students_group=group)
         return student, group
+
+    @classmethod
+    def get_equalization_result_for_student(cls, student_name, student_group,
+                                            base_path=BASE_PATH,
+                                            tolerance=EQUALISATION_TOLERANCE,
+                                            num_of_series=NUM_OF_SERIES, num_points=NUM_POINTS,
+                                            count_of_base_point=COUNT_OF_BASE_POINTS,
+                                            min_distance=MIN_DISTANCE,
+                                            xy_limits=XY_LIMITS,
+                                            z_limit=Z_LIMITS,
+                                            num_of_measure=NUM_OF_MEASURES,
+                                            d_time=D_TIME,
+                                            gnss_displacement=GNSS_DISPLACEMENT,
+                                            pass_point_prob=PASS_POINT_PROB):
+        et = cls(student_name=student_name, tolerance=tolerance, num_of_series=num_of_series, num_points=num_points,
+                 count_of_base_point=count_of_base_point,
+                 min_distance=min_distance,
+                 xy_limits=xy_limits,
+                 z_limit=z_limit,
+                 num_of_measure=num_of_measure,
+                 d_time=d_time,
+                 gnss_displacement=gnss_displacement,
+                 pass_point_prob=pass_point_prob)
+        eq_net = et._get_eq_net(base_path, student_group)
+        equalization_df = et._init_equalization_df(base_path, student_group)
+        n_df, q_df, k_df = eq_net._get_k_matrix_df()
+        print(f"Mu = {eq_net.get_mu()}")
+        print(f"N = \n", tabulate(n_df, headers='keys', tablefmt='pretty'))
+        print(f"Q = \n", tabulate(q_df, headers='keys', tablefmt='pretty'))
+        print(f"K = \n", tabulate(k_df, headers='keys', tablefmt='pretty'))
+        print(tabulate(equalization_df, headers='keys', tablefmt='pretty'))
 
 
 if __name__ == "__main__":
@@ -184,8 +219,10 @@ if __name__ == "__main__":
     # blt.create_base_lines_file_structures(students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
     #                                       base_path=r"/Users/mikhail_vystrchil/Downloads")
     #
-    EqualisationTester.check_equalisation_result_for_students_group(students_file="ГГ-21.csv",
-                                                       students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
-                                                       base_path=r"/Users/mikhail_vystrchil/Downloads")
+    # EqualisationTester.check_equalisation_result_for_students_group(students_file="ГГ-21.csv",
+    #                                                    students_file_with_good_vectors="Good_Vectors_ГГ-21.csv",
+    #                                                    base_path=r"/Users/mikhail_vystrchil/Downloads")
 
-
+    EqualisationTester.get_equalization_result_for_student(student_name="Пахомов Денис Алексеевич",
+                                                           student_group="ГГ-21-1",
+                                                           base_path=r"/Users/mikhail_vystrchil/Downloads")

@@ -1,4 +1,5 @@
 from BaseLineTester import BaseLineTester
+from EqualisationTester import EqualisationTester
 from VariantGenerator import create_variants_for_students_file
 from VectorTester import VectorTester
 
@@ -12,6 +13,9 @@ def start_checking(students_file="ГГ-21.csv",
     BaseLineTester.check_base_lines_for_students_group(students_file=students_file,
                                                   students_file_with_good_vectors=students_file_with_good_vectors,
                                                   base_path=base_path)
+    EqualisationTester.check_equalisation_result_for_students_group(students_file=students_file,
+                                                                    students_file_with_good_vectors=students_file_with_good_vectors,
+                                                                    base_path=base_path)
 
 
 if __name__ == "__main__":
